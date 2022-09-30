@@ -1,32 +1,27 @@
-const { parse } = require('csv-parse');
-const fs = require('fs')
+const express = require('express')
+const app = express()
+ const friendRouter = require('./routes/friends.route')
+ const path = require('path')
+const { dirname } = require('path')
+app.set('view engine', 'hbs')
+app.set('views', path.join(__dirname, 'views'))
+
+app.use(express.json())
+app.use('/friend', friendRouter)
+app.use('/static', express.static(path.join(__dirname,'public')))
+app.get('/', (req,res) => {
+    res.render('index', {
+        Heading1: "New static page website",
+        title: "Jibaro wallpaer"
+    })
+})
 
 
 
 
-function habitialPlanets(planet) {
-    return planet['koi_disposition'] === 'CONFIRMED'
-      && planet['koi_insol'] > 0.36 && planet['koi_insol'] < 1.11
-      && planet['koi_prad'] < 1.6
-}
 
 
-const habitialPlanet = []
-fs.createReadStream('kepler_data.csv')
-  .pipe(parse({comment: '#',
-columns: true}))
-  .on('data', (data) => {
-    if (habitialPlanets(data)) {
-        habitialPlanet.push(data)
-    }
-  })
-  .on('error', (err) => {
-    console.log(err)
-  })
-  .on('end', () => {
-    console.log(habitialPlanet.map((planet) => {
-        return planet['kepler_name']
-    }))
-    console.log(`${habitialPlanet.length} no of planets`)
-    console.log('The end')
-  })
+const port = 3000
+app.listen(port, () => {
+    console.log(`its working on ${port}`)
+})
